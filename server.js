@@ -51,6 +51,13 @@ app.get('/api/assets/export', async (req, res) => {
         res.status(500).json({ error: 'Failed to export data' });
     }
 });
+const corsOptions = {
+    origin: 'http://193.26.156.158:3000', // 替换为你的前端应用的地址
+    optionsSuccessStatus: 200 // 一些旧版浏览器对204的响应处理不佳
+};
+
+app.use(cors(corsOptions));
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
