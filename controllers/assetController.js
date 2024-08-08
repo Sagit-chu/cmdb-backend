@@ -46,6 +46,10 @@ const deleteAsset = async (req, res) => {
 
 const importAssets = async (req, res) => {
     try {
+        if (!req.file) {
+            throw new Error('No file uploaded');
+        }
+
         const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
