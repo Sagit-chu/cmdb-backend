@@ -46,6 +46,7 @@ const deleteAsset = async (req, res) => {
 
 const importAssets = async (req, res) => {
     try {
+        console.log('File received:', req.file); // 添加日志
         if (!req.file) {
             throw new Error('No file uploaded');
         }
