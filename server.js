@@ -4,7 +4,7 @@ const assetRoutes = require('./routes/assetRoutes');
 const upload = require('./middleware/upload');
 const xlsx = require('xlsx');
 const assetModel = require('./models/assetModel');
-
+const initDb = require('./initDb');
 require('dotenv').config();
 
 const app = express();
@@ -12,6 +12,9 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api', assetRoutes);
+
+// 初始化数据库表
+initDb();
 
 // 导入Excel数据
 app.post('/api/assets/import', upload.single('file'), async (req, res) => {
