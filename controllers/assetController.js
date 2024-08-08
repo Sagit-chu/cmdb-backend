@@ -46,10 +46,11 @@ const deleteAsset = async (req, res) => {
 
 const importAssets = async (req, res) => {
     try {
-        console.log('File received:', req.file); // 添加日志
         if (!req.file) {
             throw new Error('No file uploaded');
         }
+
+        console.log('File received:', req.file); // 确认文件接收
 
         const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
         const sheetName = workbook.SheetNames[0];
