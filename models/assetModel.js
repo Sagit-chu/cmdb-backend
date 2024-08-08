@@ -6,8 +6,13 @@ const getAssetsByField = async (field, value) => {
 };
 
 const addAsset = async (assetData) => {
-    const [result] = await db.query('INSERT INTO cmdb_assets SET ?', assetData);
-    return result.insertId;
+    try {
+        const [result] = await db.query('INSERT INTO cmdb_assets SET ?', assetData);
+        return result.insertId;
+    } catch (error) {
+        console.error('Error inserting asset data:', error.message);
+        throw error;
+    }
 };
 
 const updateAsset = async (id, assetData) => {
