@@ -1,4 +1,5 @@
 const assetModel = require('../models/assetModel');
+const xlsx = require('xlsx'); // 确保导入 xlsx 模块
 
 const getAssets = async (req, res) => {
     const { ip, sn } = req.query;
