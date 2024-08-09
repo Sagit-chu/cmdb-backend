@@ -6,19 +6,19 @@ import (
 )
 
 type Asset struct {
-	ID                 int
-	IP                 NullString
-	ApplicationSystem  NullString
-	ApplicationManager NullString
-	OverallManager     NullString
-	IsVirtualMachine   bool
-	ResourcePool       NullString
-	DataCenter         NullString
-	RackLocation       NullString
-	SNNumber           NullString
-	OutOfBandIP        NullString
-	CreatedAt          NullString
-	UpdatedAt          NullString
+	ID                 int        `json:"id"`
+	IP                 NullString `json:"ip"`
+	ApplicationSystem  NullString `json:"application_system"`
+	ApplicationManager NullString `json:"application_manager"`
+	OverallManager     NullString `json:"overall_manager"`
+	IsVirtualMachine   bool       `json:"is_virtual_machine"`
+	ResourcePool       NullString `json:"resource_pool"`
+	DataCenter         NullString `json:"data_center"`
+	RackLocation       NullString `json:"rack_location"`
+	SNNumber           NullString `json:"sn_number"`
+	OutOfBandIP        NullString `json:"out_of_band_ip"`
+	CreatedAt          NullString `json:"created_at"`
+	UpdatedAt          NullString `json:"updated_at"`
 }
 
 func (asset *Asset) Create() error {
