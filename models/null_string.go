@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 )
 
 // NullString 扩展了 sql.NullString 以支持 JSON 和 SQL 解析
@@ -16,14 +17,17 @@ func (ns *NullString) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
+
 	if s != nil {
-		// 如果字符串非空且有效，将其设置为 Valid
+		// 确保无论字符串是否为空，只要有值（即不是 null），都应该设置为 Valid:true
 		ns.Valid = true
 		ns.String = *s
+		fmt.Printf("Parsed valid string: %s\n", ns.String)
 	} else {
-		// 如果字符串是空或 null，设置为无效
+		// 处理 JSON 中的 null 值
 		ns.Valid = false
 		ns.String = ""
+		fmt.Println("Parsed null value")
 	}
 	return nil
 }
