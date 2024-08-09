@@ -36,6 +36,11 @@ func InitDB() {
 			err = DB.Ping()
 			if err == nil {
 				fmt.Println("Database connection established")
+				// 检查并创建表
+				err = ensureTablesExist()
+				if err != nil {
+					log.Fatal("Failed to ensure tables exist:", err)
+				}
 				return
 			}
 			log.Printf("Failed to ping database (attempt %d/%d): %v", i+1, maxRetries, err)
