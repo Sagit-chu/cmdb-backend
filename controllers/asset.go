@@ -92,11 +92,15 @@ func toString(ns sql.NullString) string {
 
 func UpdateAsset(w http.ResponseWriter, r *http.Request) {
 	var asset models.Asset
-	if err := json.NewDecoder(r.Body).Decode(&asset); err != nil {
+
+	// 打印请求体以调试数据格式问题
+	body, _ := io.ReadAll(r.Body)
+	fmt.Println("Received data:", string(body))
+
+	if err := json.Unmarshal(body, &asset); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	defer r.Body.Close()
 
 	params := mux.Vars(r)
 	id, err := strconv.Atoi(params["id"])
