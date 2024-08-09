@@ -11,24 +11,19 @@ type NullString struct {
 	sql.NullString
 }
 
-// UnmarshalJSON 自定义 JSON 解析
 func (ns *NullString) UnmarshalJSON(data []byte) error {
-	var s *string
+	// 临时字符串变量
+	var s string
+	// 解析 JSON 数据
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
 
-	if s != nil {
-		// 确保无论字符串是否为空，只要有值（即不是 null），都应该设置为 Valid:true
-		ns.Valid = true
-		ns.String = *s
-		fmt.Printf("Parsed valid string: %s\n", ns.String)
-	} else {
-		// 处理 JSON 中的 null 值
-		ns.Valid = false
-		ns.String = ""
-		fmt.Println("Parsed null value")
-	}
+	// 设置 NullString 的值
+	ns.String = s
+	ns.Valid = true
+	fmt.Printf("Parsed string: '%s', Valid: %t\n", ns.String, ns.Valid)
+
 	return nil
 }
 
