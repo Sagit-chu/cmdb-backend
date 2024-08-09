@@ -140,17 +140,21 @@ func DeleteAsset(w http.ResponseWriter, r *http.Request) {
 
 func ImportAssets(w http.ResponseWriter, r *http.Request) {
 	// 处理文件上传
-	file, _, err := r.FormFile("file")
+	file, header, err := r.FormFile("file")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, "Error retrieving the file")
+		fmt.Println("Error retrieving the file:", err)
 		return
 	}
 	defer file.Close()
+
+	fmt.Printf("Uploaded file: %s\n", header.Filename)
 
 	// 解析 Excel 文件
 	var assets []models.Asset
 	if err := parseExcelFile(file, &assets); err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "Error parsing the file")
+		fmt.Println("Error parsing the file:", err)
 		return
 	}
 
@@ -158,13 +162,13 @@ func ImportAssets(w http.ResponseWriter, r *http.Request) {
 	for _, asset := range assets {
 		if err := asset.Create(); err != nil {
 			utils.RespondWithError(w, http.StatusInternalServerError, "Error inserting data into database")
+			fmt.Println("Error inserting data into database:", err)
 			return
 		}
 	}
 
 	utils.RespondWithJSON(w, http.StatusOK, map[string]string{"message": "Data imported successfully"})
 }
-
 func parseExcelFile(file multipart.File, assets *[]models.Asset) error {
 	// 读取文件内容到内存中
 	buf, err := io.ReadAll(file)
