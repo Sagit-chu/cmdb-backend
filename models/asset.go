@@ -18,8 +18,8 @@ type Asset struct {
 	RackLocation       sql.NullString
 	SNNumber           sql.NullString
 	OutOfBandIP        sql.NullString
-	CreatedAt          string
-	UpdatedAt          string
+	CreatedAt          sql.NullString
+	UpdatedAt          sql.NullString
 }
 
 func (asset *Asset) Create() error {

@@ -16,6 +16,22 @@ import (
 	"github.com/tealeg/xlsx/v3"
 )
 
+type AssetResponse struct {
+	ID                 int    `json:"id"`
+	IP                 string `json:"ip"`
+	ApplicationSystem  string `json:"application_system"`
+	ApplicationManager string `json:"application_manager"`
+	OverallManager     string `json:"overall_manager"`
+	IsVirtualMachine   bool   `json:"is_virtual_machine"`
+	ResourcePool       string `json:"resource_pool"`
+	DataCenter         string `json:"data_center"`
+	RackLocation       string `json:"rack_location"`
+	SNNumber           string `json:"sn_number"`
+	OutOfBandIP        string `json:"out_of_band_ip"`
+	CreatedAt          string `json:"created_at"`
+	UpdatedAt          string `json:"updated_at"`
+}
+
 func CreateAsset(w http.ResponseWriter, r *http.Request) {
 	var asset models.Asset
 	if err := json.NewDecoder(r.Body).Decode(&asset); err != nil {
@@ -43,7 +59,35 @@ func GetAssets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, assets)
+	// 将数据转换为前端友好的格式
+	var assetResponses []AssetResponse
+	for _, asset := range assets {
+		assetResponses = append(assetResponses, AssetResponse{
+			ID:                 asset.ID,
+			IP:                 toString(asset.IP),
+			ApplicationSystem:  toString(asset.ApplicationSystem),
+			ApplicationManager: toString(asset.ApplicationManager),
+			OverallManager:     toString(asset.OverallManager),
+			IsVirtualMachine:   asset.IsVirtualMachine,
+			ResourcePool:       toString(asset.ResourcePool),
+			DataCenter:         toString(asset.DataCenter),
+			RackLocation:       toString(asset.RackLocation),
+			SNNumber:           toString(asset.SNNumber),
+			OutOfBandIP:        toString(asset.OutOfBandIP),
+			CreatedAt:          toString(asset.CreatedAt),
+			UpdatedAt:          toString(asset.UpdatedAt),
+		})
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, assetResponses)
+}
+
+// toString 将 sql.NullString 转换为普通字符串
+func toString(ns sql.NullString) string {
+	if ns.Valid {
+		return ns.String
+	}
+	return ""
 }
 
 func UpdateAsset(w http.ResponseWriter, r *http.Request) {
