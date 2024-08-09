@@ -49,3 +49,50 @@ func InitDB() {
 	// 如果达到最大重试次数，程序退出
 	log.Fatalf("Could not connect to database after %d attempts: %v", maxRetries, err)
 }
+
+// ensureTablesExist 检查并创建表
+func ensureTablesExist() error {
+	// 检查表是否存在
+	query := `
+		SELECT COUNT(*)
+		FROM information_schema.tables 
+		WHERE table_schema = DATABASE() 
+		AND table_name = 'cmdb_assets'
+	`
+	var count int
+	err := DB.QueryRow(query).Scan(&count)
+	if err != nil {
+		return fmt.Errorf("failed to check if table exists: %v", err)
+	}
+
+	// 如果表不存在，则创建
+	if count == 0 {
+		fmt.Println("Table cmdb_assets does not exist. Creating...")
+		createTableQuery := `
+		CREATE TABLE cmdb_assets (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			ip VARCHAR(255) NOT NULL,
+			application_system VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+			application_manager VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+			overall_manager VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+			is_virtual_machine BOOLEAN,
+			resource_pool VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+			data_center VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+			rack_location VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+			sn_number VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+			out_of_band_ip VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+		) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+		`
+		_, err := DB.Exec(createTableQuery)
+		if err != nil {
+			return fmt.Errorf("failed to create table: %v", err)
+		}
+		fmt.Println("Table cmdb_assets created successfully.")
+	} else {
+		fmt.Println("Table cmdb_assets already exists.")
+	}
+
+	return nil
+}
