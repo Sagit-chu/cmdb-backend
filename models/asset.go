@@ -108,5 +108,10 @@ func GetAssetsByQuery(ip, sn string) ([]Asset, error) {
 		assets = append(assets, asset)
 	}
 
+	// 确保返回的始终是一个数组，即使没有匹配的记录
+	if assets == nil {
+		return []Asset{}, nil
+	}
+
 	return assets, nil
 }
