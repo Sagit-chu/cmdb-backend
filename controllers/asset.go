@@ -142,13 +142,14 @@ func ImportAssets(w http.ResponseWriter, r *http.Request) {
 	// 处理文件上传
 	file, header, err := r.FormFile("file")
 	if err != nil {
+		fmt.Println("Error retrieving the file:", err) // 立即输出日志，标识出具体的错误
 		utils.RespondWithError(w, http.StatusBadRequest, "Error retrieving the file")
-		fmt.Println("Error retrieving the file:", err)
 		return
 	}
-	defer file.Close()
 
 	fmt.Printf("Uploaded file: %s\n", header.Filename)
+
+	defer file.Close()
 
 	// 解析 Excel 文件
 	var assets []models.Asset
