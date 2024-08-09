@@ -147,9 +147,21 @@ func ImportAssets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer file.Close()
+
 	fmt.Printf("Uploaded file: %s\n", header.Filename)
 
-	defer file.Close()
+	// 尝试读取文件内容，以确保文件流正常
+	buf := make([]byte, 512)
+	_, err = file.Read(buf)
+	if err != nil {
+		fmt.Println("Error reading file content:", err)
+		utils.RespondWithError(w, http.StatusBadRequest, "Error reading file content")
+		return
+	}
+
+	// 确保文件指针回到开头以供后续处理
+	file.Seek(0, io.SeekStart)
 
 	// 解析 Excel 文件
 	var assets []models.Asset
