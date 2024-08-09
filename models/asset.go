@@ -2,21 +2,22 @@ package models
 
 import (
 	"cmdb-backend/config"
+	"database/sql"
 	"log"
 )
 
 type Asset struct {
 	ID                 int
-	IP                 string
-	ApplicationSystem  string
-	ApplicationManager string
-	OverallManager     string
+	IP                 sql.NullString
+	ApplicationSystem  sql.NullString
+	ApplicationManager sql.NullString
+	OverallManager     sql.NullString
 	IsVirtualMachine   bool
-	ResourcePool       string
-	DataCenter         string
-	RackLocation       string
-	SNNumber           string
-	OutOfBandIP        string
+	ResourcePool       sql.NullString
+	DataCenter         sql.NullString
+	RackLocation       sql.NullString
+	SNNumber           sql.NullString
+	OutOfBandIP        sql.NullString
 	CreatedAt          string
 	UpdatedAt          string
 }

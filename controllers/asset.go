@@ -3,6 +3,7 @@ package controllers
 import (
 	"cmdb-backend/models"
 	"cmdb-backend/utils"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -132,16 +133,18 @@ func parseExcelFile(file multipart.File, assets *[]models.Asset) error {
 	for _, sheet := range xlFile.Sheets {
 		err := sheet.ForEachRow(func(row *xlsx.Row) error {
 			var asset models.Asset
-			asset.IP = row.GetCell(0).String()
-			asset.ApplicationSystem = row.GetCell(1).String()
-			asset.ApplicationManager = row.GetCell(2).String()
-			asset.OverallManager = row.GetCell(3).String()
-			asset.IsVirtualMachine = row.GetCell(4).Bool()
-			asset.ResourcePool = row.GetCell(5).String()
-			asset.DataCenter = row.GetCell(6).String()
-			asset.RackLocation = row.GetCell(7).String()
-			asset.SNNumber = row.GetCell(8).String()
-			asset.OutOfBandIP = row.GetCell(9).String()
+
+			// 将每个单元格的值转换为 sql.NullString
+			asset.IP = toNullString(row.GetCell(0).String())
+			asset.ApplicationSystem = toNullString(row.GetCell(1).String())
+			asset.ApplicationManager = toNullString(row.GetCell(2).String())
+			asset.OverallManager = toNullString(row.GetCell(3).String())
+			asset.IsVirtualMachine = row.GetCell(4).Bool() // Bool 类型不需要转换
+			asset.ResourcePool = toNullString(row.GetCell(5).String())
+			asset.DataCenter = toNullString(row.GetCell(6).String())
+			asset.RackLocation = toNullString(row.GetCell(7).String())
+			asset.SNNumber = toNullString(row.GetCell(8).String())
+			asset.OutOfBandIP = toNullString(row.GetCell(9).String())
 
 			*assets = append(*assets, asset)
 			return nil
@@ -154,4 +157,11 @@ func parseExcelFile(file multipart.File, assets *[]models.Asset) error {
 	}
 
 	return nil
+}
+
+func toNullString(s string) sql.NullString {
+	if s == "" {
+		return sql.NullString{String: "", Valid: false}
+	}
+	return sql.NullString{String: s, Valid: true}
 }
