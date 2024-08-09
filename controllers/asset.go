@@ -33,7 +33,11 @@ func CreateAsset(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAssets(w http.ResponseWriter, r *http.Request) {
-	assets, err := models.GetAllAssets()
+	queryParams := r.URL.Query()
+	ip := queryParams.Get("ip")
+	sn := queryParams.Get("sn")
+
+	assets, err := models.GetAssetsByQuery(ip, sn)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve assets")
 		return

@@ -76,3 +76,37 @@ func DeleteAsset(id int) error {
 	}
 	return nil
 }
+
+func GetAssetsByQuery(ip, sn string) ([]Asset, error) {
+	query := "SELECT * FROM cmdb_assets WHERE 1=1"
+	args := []interface{}{}
+
+	if ip != "" {
+		query += " AND ip = ?"
+		args = append(args, ip)
+	}
+
+	if sn != "" {
+		query += " AND sn_number = ?"
+		args = append(args, sn)
+	}
+
+	rows, err := config.DB.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var assets []Asset
+	for rows.Next() {
+		var asset Asset
+		err := rows.Scan(&asset.ID, &asset.IP, &asset.ApplicationSystem, &asset.ApplicationManager, &asset.OverallManager, &asset.IsVirtualMachine, &asset.ResourcePool, &asset.DataCenter, &asset.RackLocation, &asset.SNNumber, &asset.OutOfBandIP, &asset.CreatedAt, &asset.UpdatedAt)
+		if err != nil {
+			log.Println("Error scanning asset:", err)
+			return nil, err
+		}
+		assets = append(assets, asset)
+	}
+
+	return assets, nil
+}
