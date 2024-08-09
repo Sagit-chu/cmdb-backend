@@ -6,19 +6,19 @@ import (
 )
 
 type Asset struct {
-	ID                int
-	IP                string
-	ApplicationSystem string
+	ID                 int
+	IP                 string
+	ApplicationSystem  string
 	ApplicationManager string
-	OverallManager    string
-	IsVirtualMachine  bool
-	ResourcePool      string
-	DataCenter        string
-	RackLocation      string
-	SNNumber          string
-	OutOfBandIP       string
-	CreatedAt         string
-	UpdatedAt         string
+	OverallManager     string
+	IsVirtualMachine   bool
+	ResourcePool       string
+	DataCenter         string
+	RackLocation       string
+	SNNumber           string
+	OutOfBandIP        string
+	CreatedAt          string
+	UpdatedAt          string
 }
 
 func (asset *Asset) Create() error {
@@ -53,4 +53,25 @@ func GetAllAssets() ([]Asset, error) {
 	}
 
 	return assets, nil
+}
+
+func (asset *Asset) Update() error {
+	query := `UPDATE cmdb_assets SET ip=?, application_system=?, application_manager=?, overall_manager=?, is_virtual_machine=?, resource_pool=?, data_center=?, rack_location=?, sn_number=?, out_of_band_ip=? WHERE id=?`
+
+	_, err := config.DB.Exec(query, asset.IP, asset.ApplicationSystem, asset.ApplicationManager, asset.OverallManager, asset.IsVirtualMachine, asset.ResourcePool, asset.DataCenter, asset.RackLocation, asset.SNNumber, asset.OutOfBandIP, asset.ID)
+	if err != nil {
+		log.Println("Error updating asset:", err)
+		return err
+	}
+	return nil
+}
+
+func DeleteAsset(id int) error {
+	query := "DELETE FROM cmdb_assets WHERE id=?"
+	_, err := config.DB.Exec(query, id)
+	if err != nil {
+		log.Println("Error deleting asset:", err)
+		return err
+	}
+	return nil
 }
