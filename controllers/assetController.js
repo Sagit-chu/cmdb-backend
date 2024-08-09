@@ -46,24 +46,19 @@ const deleteAsset = async (req, res) => {
 
 const importAssets = async (req, res) => {
     try {
-        console.log('Request received:', req.method, req.url);
-        console.log('Request headers:', req.headers);
+        console.log('Request file:', req.file);
 
         if (!req.file) {
             console.log('No file found in request');
             throw new Error('No file uploaded');
         }
 
-        console.log('File received:', req.file);
         const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
-        console.log('Workbook parsed:', workbook);
 
         const sheetName = workbook.SheetNames[0];
-        console.log('Sheet name:', sheetName);
 
         const sheet = workbook.Sheets[sheetName];
         const data = xlsx.utils.sheet_to_json(sheet);
-        console.log('Data parsed from sheet:', data);
 
         for (const asset of data) {
             await assetModel.addAsset(asset);
