@@ -59,7 +59,6 @@ func GetAssets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 将数据转换为前端友好的格式
 	var assetResponses []AssetResponse
 	for _, asset := range assets {
 		assetResponses = append(assetResponses, AssetResponse{
@@ -83,7 +82,7 @@ func GetAssets(w http.ResponseWriter, r *http.Request) {
 }
 
 // toString 将 sql.NullString 转换为普通字符串
-func toString(ns sql.NullString) string {
+func toString(ns models.NullString) string {
 	if ns.Valid {
 		return ns.String
 	}
@@ -93,14 +92,19 @@ func toString(ns sql.NullString) string {
 func UpdateAsset(w http.ResponseWriter, r *http.Request) {
 	var asset models.Asset
 
-	// 打印请求体以调试数据格式问题
+	// 读取并打印请求体
 	body, _ := io.ReadAll(r.Body)
 	fmt.Println("Received data:", string(body))
 
+	// 解析请求体的 JSON 数据
 	if err := json.Unmarshal(body, &asset); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		fmt.Println("Error unmarshalling JSON:", err)
 		return
 	}
+
+	// 打印解析后的结构体
+	fmt.Printf("Parsed asset: %+v\n", asset)
 
 	params := mux.Vars(r)
 	id, err := strconv.Atoi(params["id"])
@@ -186,7 +190,7 @@ func parseExcelFile(file multipart.File, assets *[]models.Asset) error {
 		err := sheet.ForEachRow(func(row *xlsx.Row) error {
 			var asset models.Asset
 
-			// 将每个单元格的值转换为 sql.NullString
+			// 将每个单元格的值转换为 models.NullString
 			asset.IP = toNullString(row.GetCell(0).String())
 			asset.ApplicationSystem = toNullString(row.GetCell(1).String())
 			asset.ApplicationManager = toNullString(row.GetCell(2).String())
@@ -211,9 +215,10 @@ func parseExcelFile(file multipart.File, assets *[]models.Asset) error {
 	return nil
 }
 
-func toNullString(s string) sql.NullString {
+// toNullString 将普通字符串转换为 models.NullString
+func toNullString(s string) models.NullString {
 	if s == "" {
-		return sql.NullString{String: "", Valid: false}
+		return models.NullString{NullString: sql.NullString{String: "", Valid: false}}
 	}
-	return sql.NullString{String: s, Valid: true}
+	return models.NullString{NullString: sql.NullString{String: s, Valid: true}}
 }

@@ -2,24 +2,23 @@ package models
 
 import (
 	"cmdb-backend/config"
-	"database/sql"
 	"log"
 )
 
 type Asset struct {
 	ID                 int
-	IP                 sql.NullString
-	ApplicationSystem  sql.NullString
-	ApplicationManager sql.NullString
-	OverallManager     sql.NullString
+	IP                 NullString
+	ApplicationSystem  NullString
+	ApplicationManager NullString
+	OverallManager     NullString
 	IsVirtualMachine   bool
-	ResourcePool       sql.NullString
-	DataCenter         sql.NullString
-	RackLocation       sql.NullString
-	SNNumber           sql.NullString
-	OutOfBandIP        sql.NullString
-	CreatedAt          sql.NullString
-	UpdatedAt          sql.NullString
+	ResourcePool       NullString
+	DataCenter         NullString
+	RackLocation       NullString
+	SNNumber           NullString
+	OutOfBandIP        NullString
+	CreatedAt          NullString
+	UpdatedAt          NullString
 }
 
 func (asset *Asset) Create() error {
@@ -108,7 +107,6 @@ func GetAssetsByQuery(ip, sn string) ([]Asset, error) {
 		assets = append(assets, asset)
 	}
 
-	// 确保返回的始终是一个数组，即使没有匹配的记录
 	if assets == nil {
 		return []Asset{}, nil
 	}
